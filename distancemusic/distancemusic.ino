@@ -81,54 +81,9 @@ void loop() {
     onoff = !onoff;
 
     if (onoff) {
-      for(int i = 0; i < 5; i++){
-        digitalWrite(LED0_PIN, HIGH);
-        digitalWrite(LED1_PIN, HIGH);
-        digitalWrite(LED2_PIN, HIGH); 
-        delay(100);
-        digitalWrite(LED0_PIN, LOW);
-        digitalWrite(LED1_PIN, LOW);
-        digitalWrite(LED2_PIN, LOW); 
-        delay(100);        
-      }
-      digitalWrite(LED0_PIN, HIGH);
-      prime.play(262, 200);
-      delay(200);
-      digitalWrite(LED1_PIN, HIGH);
-      prime.play(330, 200);
-      delay(200);
-      digitalWrite(LED2_PIN, HIGH);
-      prime.play(392, 200);
-      delay(200);
-      digitalWrite(LED0_PIN, LOW);
-      digitalWrite(LED1_PIN, LOW);   
+      startUp();         
     } else {
-      prime.stop();
-      quint.stop();
-      
-      digitalWrite(LED0_PIN, HIGH);
-      digitalWrite(LED1_PIN, HIGH);
-      digitalWrite(LED2_PIN, HIGH);
-      for(int i = 0; i < 5; i++){
-        digitalWrite(LED0_PIN, LOW);
-        digitalWrite(LED1_PIN, LOW);
-        digitalWrite(LED2_PIN, LOW); 
-        delay(100);
-        digitalWrite(LED0_PIN, HIGH);
-        digitalWrite(LED1_PIN, HIGH);
-        digitalWrite(LED2_PIN, HIGH); 
-        delay(100);
-      }
-      digitalWrite(LED2_PIN, LOW);
-      prime.play(392, 200);
-      delay(200);
-      digitalWrite(LED1_PIN, LOW);
-      prime.play(330, 200);
-      delay(200);
-      digitalWrite(LED0_PIN, LOW);
-      prime.play(262, 200);
-      delay(200);
-      digitalWrite(LED0_PIN, HIGH);
+      shutDown();     
     }
   }
 
@@ -165,4 +120,57 @@ void loop() {
 
   //Serial.println();
 
+}
+
+void startUp(){
+  for(int i = 0; i < 5; i++){
+        digitalWrite(LED0_PIN, HIGH);
+        digitalWrite(LED1_PIN, HIGH);
+        digitalWrite(LED2_PIN, HIGH); 
+        delay(100);
+        digitalWrite(LED0_PIN, LOW);
+        digitalWrite(LED1_PIN, LOW);
+        digitalWrite(LED2_PIN, LOW); 
+        delay(100);        
+      }
+      digitalWrite(LED0_PIN, HIGH);
+      prime.play(262, 200);
+      delay(200);
+      digitalWrite(LED1_PIN, HIGH);
+      prime.play(330, 200);
+      delay(200);
+      digitalWrite(LED2_PIN, HIGH);
+      prime.play(392, 200);
+      delay(200);
+      digitalWrite(LED0_PIN, LOW);
+      digitalWrite(LED1_PIN, LOW);
+}
+
+void shutDown(){
+  prime.stop();
+  quint.stop();
+      
+  digitalWrite(LED0_PIN, HIGH);
+  digitalWrite(LED1_PIN, HIGH);
+  digitalWrite(LED2_PIN, HIGH);
+    for(int i = 0; i < 5; i++){
+      digitalWrite(LED0_PIN, LOW);
+      digitalWrite(LED1_PIN, LOW);
+      digitalWrite(LED2_PIN, LOW); 
+      delay(100);
+      digitalWrite(LED0_PIN, HIGH);
+      digitalWrite(LED1_PIN, HIGH);
+      digitalWrite(LED2_PIN, HIGH); 
+      delay(100);
+      }
+  digitalWrite(LED2_PIN, LOW);
+  prime.play(392, 200);
+  delay(200);
+  digitalWrite(LED1_PIN, LOW);
+  prime.play(330, 200);
+  delay(200);
+  digitalWrite(LED0_PIN, LOW);
+  prime.play(262, 200);
+  delay(200);
+  digitalWrite(LED0_PIN, HIGH);
 }
