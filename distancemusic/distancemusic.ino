@@ -51,7 +51,8 @@ bool onoff = false;
 int inputAnalog;
 int del;
 
-
+float littleTerzFactor = 1.189207115;
+float bigTerzFactor = 1.25992105;
 float quintFactor = 1.498307077;
 
 void setup() {
@@ -105,10 +106,10 @@ void loop() {
   if (onoff) {
     if (a >= dMin && a <= dMax) {
       int freq = m * a + f;
-      //int freqQuint = int(freq*quintFactor);
+      int freqQuint = int(freq*littleTerzFactor);
       //Serial.print(freq);
       prime.play(freq);
-      //quint.play(freqQuint);
+      quint.play(freqQuint);
       delay(del);
     } else {
     prime.stop();
