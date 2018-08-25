@@ -31,10 +31,10 @@ long a;
 int dMin = 5;
 int dMax = 40;
 
-//int fMin1 = 262; // C4
-//int fMax1 = 523; //C5
-int fMin1 = 523; //C5
-int fMax1 = 262; // C4
+int fMin1 = 262; // C4
+int fMax1 = 523; //C5
+//int fMin1 = 523; //C5
+//int fMax1 = 262; // C4
 float m1 = float(fMax1 - fMin1) / float(dMax - dMin);
 float f1 = fMin1 - (dMin * m1);
 
@@ -43,8 +43,8 @@ int fMax2 = 1047; // C6
 float m2 = float(fMax2 - fMin2) / float(dMax - dMin);
 float f2 = fMin2 - (dMin * m2);
 
-float m = m2;
-float f = f2;
+float m = m1;
+float f = f1;
 
 bool onoff = false;
 
@@ -59,6 +59,7 @@ void setup() {
   pinMode(LED0_PIN, OUTPUT);
   pinMode(LED1_PIN, OUTPUT);
   pinMode(LED2_PIN, OUTPUT);
+  digitalWrite(LED0_PIN, HIGH);
 
   prime.begin(BUZZER_PIN0);
   quint.begin(BUZZER_PIN1);
@@ -80,6 +81,16 @@ void loop() {
     onoff = !onoff;
 
     if (onoff) {
+      for(int i = 0; i < 5; i++){
+        digitalWrite(LED0_PIN, HIGH);
+        digitalWrite(LED1_PIN, HIGH);
+        digitalWrite(LED2_PIN, HIGH); 
+        delay(100);
+        digitalWrite(LED0_PIN, LOW);
+        digitalWrite(LED1_PIN, LOW);
+        digitalWrite(LED2_PIN, LOW); 
+        delay(100);        
+      }
       digitalWrite(LED0_PIN, HIGH);
       prime.play(262, 200);
       delay(200);
@@ -89,16 +100,6 @@ void loop() {
       digitalWrite(LED2_PIN, HIGH);
       prime.play(392, 200);
       delay(200);
-      for(int i = 0; i < 5; i++){
-        digitalWrite(LED0_PIN, LOW);
-        digitalWrite(LED1_PIN, LOW);
-        digitalWrite(LED2_PIN, LOW); 
-        delay(100);
-        digitalWrite(LED0_PIN, HIGH);
-        digitalWrite(LED1_PIN, HIGH);
-        digitalWrite(LED2_PIN, HIGH); 
-        delay(100);
-      }
       digitalWrite(LED0_PIN, LOW);
       digitalWrite(LED1_PIN, LOW);   
     } else {
@@ -127,6 +128,7 @@ void loop() {
       digitalWrite(LED0_PIN, LOW);
       prime.play(262, 200);
       delay(200);
+      digitalWrite(LED0_PIN, HIGH);
     }
   }
 
