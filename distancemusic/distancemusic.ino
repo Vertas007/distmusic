@@ -1,12 +1,15 @@
-//www.elegoo.com
-//2016.12.08
-//
+// Geile Mukke by Chris&Matt
 #include "SR04.h"
 #include <Tone.h>
 
+
+#define ANALOG_PIN A0
 #define TRIG_PIN 12
 #define ECHO_PIN 11
 #define BUTTON_PIN 2
+
+#define BUTTON_UP_PIN 6
+#define BUTTON_DOWN_PIN 7
 
 #define BUZZER_PIN0 8
 #define BUZZER_PIN1 9
@@ -15,12 +18,9 @@
 #define LED1_PIN 4
 #define LED2_PIN 5
 
-#define ANALOG_PIN A0
-
 // Töne
 Tone prime;
-Tone terzDur;
-Tone quint;
+Tone other;
 // end Töne
 
 // Distanzmessung
@@ -29,41 +29,52 @@ long a;
 // end Distanzmessung
 
 int dMin = 5;
-int dMax = 40;
+int dMax = 60;
 
-int fMin1 = 262; // C4
-int fMax1 = 523; //C5
+int fMinBase = 262;
+int fMaxBase = 523;
+float m = float(fMaxBase - fMinBase) / float(dMax - dMin);
+float f = fMinBase - (dMin * m);
+
+int oct = 4;
+
+float littleTerzFactor = 1.189207115;
+float bigTerzFactor = 1.25992105;
+float quintFactor = 1.498307077;
+
+
+//int fMin1 = 262; // C4
+//int fMax1 = 523; //C5
 //int fMin1 = 523; //C5
 //int fMax1 = 262; // C4
-float m1 = float(fMax1 - fMin1) / float(dMax - dMin);
-float f1 = fMin1 - (dMin * m1);
 
-int fMin2 = 523; // C5
-int fMax2 = 1047; // C6
-float m2 = float(fMax2 - fMin2) / float(dMax - dMin);
-float f2 = fMin2 - (dMin * m2);
+//float m1 = float(fMax1 - fMin1) / float(dMax - dMin);
+//float f1 = fMin1 - (dMin * m1);
 
-float m = m1;
-float f = f1;
+//int fMin2 = 523; // C5
+//int fMax2 = 1047; // C6
+//float m2 = float(fMax2 - fMin2) / float(dMax - dMin);
+//float f2 = fMin2 - (dMin * m2);
+
+//float m = m1;
+//float f = f1;
 
 bool onoff = false;
 
 int inputAnalog;
 int del;
 
-float littleTerzFactor = 1.189207115;
-float bigTerzFactor = 1.25992105;
-float quintFactor = 1.498307077;
-
 void setup() {
   pinMode(BUTTON_PIN, INPUT_PULLUP);
+  pinMode(BUTTON_UP_PIN, INPUT_PULLUP);
+  pinMode(BUTTON_DOWN_PIN, INPUT_PULLUP);
   pinMode(LED0_PIN, OUTPUT);
   pinMode(LED1_PIN, OUTPUT);
   pinMode(LED2_PIN, OUTPUT);
   digitalWrite(LED0_PIN, HIGH);
 
   prime.begin(BUZZER_PIN0);
-  quint.begin(BUZZER_PIN1);
+  other.begin(BUZZER_PIN1);
 
   //Serial.begin(9600);
   /*  Serial.print(m1);
@@ -95,25 +106,54 @@ void loop() {
   //}  
   //Serial.println(inputAnalog);
   del = map(inputAnalog, 0, 1023, 0, 50);
-
-  //if (digitalRead(BUTTON_PIN) == LOW) {
-  //  m = m1;
-  //  f = f1;
-  //} else {
-  //  m = m2;
-  //  f = f2;
-  //}
+  
   if (onoff) {
+    if(digitalRead(BUTTON_DOWN_PIN) == LOW){
+      if(oct > 2){
+        prime.stop();
+        other.stop();
+        oct -= 1;
+        int fMin = pow(2, 12*(oct-4)/12) * fMinBase;
+        int fMax = pow(2, 12*(oct-4)/12) * fMaxBase;
+        m = float(fMax - fMin) / float(dMax - dMin);
+        f = fMin - (dMin * m);
+        prime.play(fMax, 400);
+        delay(200);
+        other.play(fMin, 200);
+      }
+      delay(250);
+    }
+    if(digitalRead(BUTTON_UP_PIN) == LOW){
+      if(oct < 8){
+        prime.stop();
+        other.stop();
+        oct += 1;
+        int fMin = pow(2, 12*(oct-4)/12) * fMinBase;
+        int fMax = pow(2, 12*(oct-4)/12) * fMaxBase;
+        m = float(fMax - fMin) / float(dMax - dMin);
+        f = fMin - (dMin * m);
+        prime.play(fMin, 400);
+        delay(200);
+        other.play(fMax, 200);
+      }
+      delay(250);
+    }
+    
     if (a >= dMin && a <= dMax) {
       int freq = m * a + f;
-      int freqQuint = int(freq*littleTerzFactor);
+      int freqQuint = int(freq*quintFactor);
       //Serial.print(freq);
+
+      if(del>5){
+        prime.stop();
+        other.stop();
+        delay(del);
+      }
       prime.play(freq);
-      quint.play(freqQuint);
-      delay(del);
+      other.play(freqQuint);
     } else {
     prime.stop();
-    quint.stop();
+    other.stop();
     //Serial.print(0);
     } // end else
     //Serial.print(" Hz");    
@@ -149,7 +189,7 @@ void startUp(){
 
 void shutDown(){
   prime.stop();
-  quint.stop();
+  other.stop();
       
   digitalWrite(LED0_PIN, HIGH);
   digitalWrite(LED1_PIN, HIGH);
