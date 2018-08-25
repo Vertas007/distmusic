@@ -51,6 +51,9 @@ bool onoff = false;
 int inputAnalog;
 int del;
 
+
+float quintFactor = 1.498307077;
+
 void setup() {
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(LED0_PIN, OUTPUT);
@@ -60,8 +63,8 @@ void setup() {
   prime.begin(BUZZER_PIN0);
   quint.begin(BUZZER_PIN1);
 
-  /*Serial.begin(9600);
-    Serial.print(m1);
+  //Serial.begin(9600);
+  /*  Serial.print(m1);
     Serial.print(" ");
     Serial.println(m2);
     //delay(1000);*/
@@ -86,9 +89,35 @@ void loop() {
       digitalWrite(LED2_PIN, HIGH);
       prime.play(392, 200);
       delay(200);
-    }
-
-    if (!onoff) {
+      for(int i = 0; i < 5; i++){
+        digitalWrite(LED0_PIN, LOW);
+        digitalWrite(LED1_PIN, LOW);
+        digitalWrite(LED2_PIN, LOW); 
+        delay(100);
+        digitalWrite(LED0_PIN, HIGH);
+        digitalWrite(LED1_PIN, HIGH);
+        digitalWrite(LED2_PIN, HIGH); 
+        delay(100);
+      }
+      digitalWrite(LED0_PIN, LOW);
+      digitalWrite(LED1_PIN, LOW);   
+    } else {
+      prime.stop();
+      quint.stop();
+      
+      digitalWrite(LED0_PIN, HIGH);
+      digitalWrite(LED1_PIN, HIGH);
+      digitalWrite(LED2_PIN, HIGH);
+      for(int i = 0; i < 5; i++){
+        digitalWrite(LED0_PIN, LOW);
+        digitalWrite(LED1_PIN, LOW);
+        digitalWrite(LED2_PIN, LOW); 
+        delay(100);
+        digitalWrite(LED0_PIN, HIGH);
+        digitalWrite(LED1_PIN, HIGH);
+        digitalWrite(LED2_PIN, HIGH); 
+        delay(100);
+      }
       digitalWrite(LED2_PIN, LOW);
       prime.play(392, 200);
       delay(200);
@@ -102,10 +131,10 @@ void loop() {
   }
 
   inputAnalog = analogRead(ANALOG_PIN);
-  if(inputAnalog <= 50)
-  {
-    inputAnalog = 0;
-  }  
+  //if(inputAnalog <= 50)
+ // {
+   // inputAnalog = 0;
+  //}  
   //Serial.println(inputAnalog);
   del = map(inputAnalog, 0, 1023, 0, 50);
 
@@ -119,13 +148,17 @@ void loop() {
   if (onoff) {
     if (a >= dMin && a <= dMax) {
       int freq = m * a + f;
+      //int freqQuint = int(freq*quintFactor);
       //Serial.print(freq);
-      prime.play(freq, 50);
+      prime.play(freq);
+      //quint.play(freqQuint);
       delay(del);
-    } //else {
+    } else {
+    prime.stop();
+    quint.stop();
     //Serial.print(0);
-    //} // end else
-    //Serial.print(" Hz");
+    } // end else
+    //Serial.print(" Hz");    
   } // end else onoff
 
   //Serial.println();
